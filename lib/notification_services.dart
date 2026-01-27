@@ -1,0 +1,137 @@
+//
+// import 'package:firebase_messaging/firebase_messaging.dart';
+//
+// class NotificationServices {
+//
+//   /// Creating an instance of firebase messaging
+//   final FirebaseMessaging messaging = FirebaseMessaging.instance;
+//
+//   /// Function to initialize notification
+//   Future<void> firebaseInit()async {
+//
+//     // Request permission from user
+//     await messaging.requestPermission();
+//
+//     // Fetch FM token from device
+//     final fCMToken = await messaging.getToken();
+//
+//     print('Token: $fCMToken');
+//   }
+// }
+
+import 'dart:io';
+import 'dart:developer';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:new_app/second_screen.dart';
+
+class NotificationServices {
+  /// Creating an instance of firebase messaging
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
+  /// Requesting the permission from the user
+  Future<void> requestNotificationPermissions() async {
+    NotificationSettings settings = await messaging.requestPermission(
+      announcement: true,
+      carPlay: true,
+      criticalAlert: true,
+      provisional: true,
+      sound: true,
+    );
+
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      log('User grant permission.');
+    } else if (settings.authorizationStatus ==
+        AuthorizationStatus.provisional) {
+      log('User granted provisional permission');
+    } else {
+      log('User declined permission');
+    }
+  }
+
+  /// Getting the FCM Token from the device
+  Future<String> getDeviceToken() async {
+    String? token = await messaging.getToken();
+    return token!;
+  }
+
+  /// Check if the token is changes
+  void isTokenRefresh() {
+    messaging.onTokenRefresh.listen((event) {
+      event.toString();
+      log('refresh');
+    });
+  }
+
+  void firebaseInit(BuildContext context) {
+    FirebaseMessaging.onMessage.listen((message) {
+      if (kDebugMode) {
+        print(message.notification!.title.toString());
+        print(message.notification!.body.toString());
+      }
+      if (Platform.isAndroid) {
+        initLocalNotifications(context, message);
+        showNotifications(message);
+      }
+      // showNotifications(message);
+    });
+  }
+
+  void initLocalNotifications(
+    BuildContext context,
+    RemoteMessage message,
+  ) async {
+    var androidInitializationSettings = AndroidInitializationSettings(
+      '@mipmap/ic_launcher',
+    );
+
+    var initializationSettings = InitializationSettings(
+      android: androidInitializationSettings,
+    );
+
+    await flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse: (details) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => SecondScreen()),
+        );
+      },
+    );
+  }
+
+  Future<void> showNotifications(RemoteMessage message) async {
+    AndroidNotificationChannel channel = AndroidNotificationChannel(
+      '0',
+      'High priority channel',
+      importance: Importance.max,
+    );
+
+    AndroidNotificationDetails androidNotificationDetails =
+        AndroidNotificationDetails(
+          channel.id,
+          channel.name,
+          channelDescription: 'Channel description',
+          importance: Importance.high,
+          priority: Priority.high,
+          ticker: 'Ticker',
+        );
+    NotificationDetails notificationDetails = NotificationDetails(
+      android: androidNotificationDetails,
+    );
+
+    Future.delayed(Duration.zero, () {
+      flutterLocalNotificationsPlugin.show(
+        0,
+        message.notification!.title,
+        message.notification!.body,
+        notificationDetails,
+      );
+    });
+  }
+}
