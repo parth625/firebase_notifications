@@ -45,7 +45,9 @@ class NotificationServices {
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => SecondScreen()),
+        MaterialPageRoute(builder: (context) =>
+            SecondScreen(title: message.notification?.title ?? '',
+                body: message.notification?.body ?? '',)),
       );
     });
   }
@@ -56,7 +58,13 @@ class NotificationServices {
     if (message != null) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => SecondScreen()),
+        MaterialPageRoute(
+          builder: (context) =>
+              SecondScreen(
+                body: message.notification?.body ?? '',
+                title: message.notification?.title ?? '',
+              ),
+        ),
       );
     }
   }
