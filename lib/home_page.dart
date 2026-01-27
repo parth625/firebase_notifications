@@ -21,6 +21,9 @@ class _HomePageState extends State<HomePage> {
     notificationServices.getDeviceToken().then((value) {
       log('Token: $value');
     });
+
+    notificationServices.handleMessageTap(context);
+    notificationServices.handleTerminatedMessageTap(context);
     super.initState();
   }
 

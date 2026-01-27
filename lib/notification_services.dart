@@ -1,38 +1,11 @@
-//
-// import 'package:firebase_messaging/firebase_messaging.dart';
-//
-// class NotificationServices {
-//
-//   /// Creating an instance of firebase messaging
-//   final FirebaseMessaging messaging = FirebaseMessaging.instance;
-//
-//   /// Function to initialize notification
-//   Future<void> firebaseInit()async {
-//
-//     // Request permission from user
-//     await messaging.requestPermission();
-//
-//     // Fetch FM token from device
-//     final fCMToken = await messaging.getToken();
-//
-//     print('Token: $fCMToken');
-//   }
-// }
-
-import 'dart:io';
 import 'dart:developer';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:new_app/second_screen.dart';
 
 class NotificationServices {
   /// Creating an instance of firebase messaging
   FirebaseMessaging messaging = FirebaseMessaging.instance;
-
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
 
   /// Requesting the permission from the user
   Future<void> requestNotificationPermissions() async {
@@ -68,70 +41,25 @@ class NotificationServices {
     });
   }
 
-  void firebaseInit(BuildContext context) {
-    FirebaseMessaging.onMessage.listen((message) {
-      if (kDebugMode) {
-        print(message.notification!.title.toString());
-        print(message.notification!.body.toString());
-      }
-      if (Platform.isAndroid) {
-        initLocalNotifications(context, message);
-        showNotifications(message);
-      }
-      // showNotifications(message);
-    });
-  }
-
-  void initLocalNotifications(
-    BuildContext context,
-    RemoteMessage message,
-  ) async {
-    var androidInitializationSettings = AndroidInitializationSettings(
-      '@mipmap/ic_launcher',
-    );
-
-    var initializationSettings = InitializationSettings(
-      android: androidInitializationSettings,
-    );
-
-    await flutterLocalNotificationsPlugin.initialize(
-      initializationSettings,
-      onDidReceiveNotificationResponse: (details) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => SecondScreen()),
-        );
-      },
-    );
-  }
-
-  Future<void> showNotifications(RemoteMessage message) async {
-    AndroidNotificationChannel channel = AndroidNotificationChannel(
-      '0',
-      'High priority channel',
-      importance: Importance.max,
-    );
-
-    AndroidNotificationDetails androidNotificationDetails =
-        AndroidNotificationDetails(
-          channel.id,
-          channel.name,
-          channelDescription: 'Channel description',
-          importance: Importance.high,
-          priority: Priority.high,
-          ticker: 'Ticker',
-        );
-    NotificationDetails notificationDetails = NotificationDetails(
-      android: androidNotificationDetails,
-    );
-
-    Future.delayed(Duration.zero, () {
-      flutterLocalNotificationsPlugin.show(
-        0,
-        message.notification!.title,
-        message.notification!.body,
-        notificationDetails,
+  void handleMessageTap(BuildContext context) {
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => SecondScreen()),
       );
     });
   }
+
+  Future<void> handleTerminatedMessageTap(BuildContext context) async {
+    RemoteMessage? message = await messaging.getInitialMessage();
+
+    if (message != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => SecondScreen()),
+      );
+    }
+  }
+
+  void firebaseInit(BuildContext context) {}
 }
