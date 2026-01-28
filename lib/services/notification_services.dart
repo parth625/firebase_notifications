@@ -3,10 +3,10 @@ import 'dart:developer';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:new_app/navigation_service.dart';
-import 'package:new_app/screen_one.dart';
-import 'package:new_app/screen_two.dart';
-import 'package:new_app/second_screen.dart';
+import 'package:new_app/services/navigation_service.dart';
+import 'package:new_app/pages/screen_one.dart';
+import 'package:new_app/pages/screen_two.dart';
+import 'package:new_app/pages/second_screen.dart';
 
 class NotificationServices {
   /// Creating an instance of firebase messaging

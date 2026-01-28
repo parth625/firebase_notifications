@@ -36,21 +36,6 @@ class _ScreenTwoState extends State<ScreenTwo> {
               height: 200,
               width: 200,
               fit: BoxFit.cover,
-
-              // ✅ shows loader
-              loadingBuilder: (context, child, progress) {
-                if (progress == null) return child;
-                return const CircularProgressIndicator();
-              },
-
-              // ✅ handles SSL / 404 / network failure
-              errorBuilder: (context, error, stackTrace) {
-                return const Icon(
-                  Icons.info,
-                  size: 100,
-                  color: Colors.grey,
-                );
-              },
             ),
           ],
         ),

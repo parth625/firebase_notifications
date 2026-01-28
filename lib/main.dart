@@ -4,10 +4,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:new_app/firebase_options.dart';
-import 'package:new_app/home_page.dart';
+import 'package:new_app/pages/home_page.dart';
 
-import 'navigation_service.dart';
-import 'notification_services.dart';
+import 'services/navigation_service.dart';
+import 'services/notification_services.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
