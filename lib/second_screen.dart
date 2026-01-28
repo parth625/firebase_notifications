@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class SecondScreen extends StatefulWidget {
-  final String title;
-  final String body;
+  final String? title;
+  final String? body;
 
   const SecondScreen({super.key, required this.title, required this.body});
 

@@ -11,29 +11,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
-  NotificationServices notificationServices = NotificationServices();
-  @override
-  void initState() {
-    notificationServices.requestNotificationPermissions();
-    // notificationServices.isTokenRefresh();
-    notificationServices.firebaseInit(context);
-    notificationServices.getDeviceToken().then((value) {
-      log('Token: $value');
-    });
-
-    notificationServices.handleMessageTap(context);
-    notificationServices.handleTerminatedMessageTap(context);
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        title: Text('Home Page', ),
-      ),
-    );
+    return Scaffold(appBar: AppBar(elevation: 0, title: Text('Home Page')));
   }
 }

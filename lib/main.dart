@@ -6,6 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:new_app/firebase_options.dart';
 import 'package:new_app/home_page.dart';
 
+import 'navigation_service.dart';
+import 'notification_services.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   FirebaseMessaging.onBackgroundMessage(backgroundMessageHandler);
@@ -25,9 +28,30 @@ class MyApp extends StatefulWidget {
 }
 
 class MyAppState extends State<MyApp> {
+
+  NotificationServices notificationServices = NotificationServices();
+
+  @override
+  void initState() {
+    notificationServices.requestNotificationPermissions();
+
+    notificationServices.getDeviceToken().then((value) {
+      log('Token: $value');
+    });
+    // notificationServices.isTokenRefresh();
+    notificationServices.firebaseInit(context);
+    notificationServices.initLocalNotifications(context);
+
+    notificationServices.handleMessageTap();
+    notificationServices.handleTerminatedMessageTap();
+    super.initState();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey,
       title: 'New App',
       theme: ThemeData(primarySwatch: Colors.blue, useMaterial3: false
       ),
